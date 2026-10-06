@@ -1,0 +1,123 @@
+/* 
+ *   Lapis CV  /  Author - GoForceX, YiNN
+ *   https://github.com/BingyanStudio/LapisCV
+ */
+
+ body {
+    --profile-info-center-correction: 1;
+
+    /* Custom Configs */
+
+    --text-size: 10pt;
+    /* 本地改动:上游 1.8。收紧到 1.5 —— 一页容量不足,且 1.5 更接近简历常规行距。
+       注意:行距影响页头高度,日后若要放头像,AVATAR_TOP_MM 需重新实测。 */
+    --line-height: 1.5;
+    /* 本地改动:上游是 28mm 的方形圆头像,这里换成小一寸证件照 2.2×3.2cm */
+    --avatar-width: 22mm;
+    --avatar-height: 32mm;
+
+    --h1-size: 16pt;
+    --h2-size: 12pt;
+    --h3-size: 10.5pt;
+    --blockquote-size: 9.5pt;
+
+    --text-font: 'SourceHanSansCN';
+    --title-font: 'SourceHanSansCN';
+    --link-font: 'JetBrainsMono';
+    --code-font: 'JetBrainsMono';
+
+    --color-accent: #00327dac;
+    --text-normal: #353a42;
+    --link-color: var(--color-accent);
+    --text-strong: #353a42;
+    --h1-color: var(--text-normal);
+    --h2-color: var(--color-accent);
+    --h3-color: var(--text-normal);
+    --h4-color: var(--text-normal);
+    --border-color: #dae3ea;
+    --background-primary: #fff;
+}
+
+@font-face {
+    font-family: "SourceHanSansCN";
+    src: url('../fonts/SourceHanSansCN-Regular.ttf');
+}
+
+@font-face {
+    font-family: "SourceHanSansCN";
+    src: url('../fonts/SourceHanSansCN-Bold.ttf');
+    font-weight: bold;
+}
+
+/* Latin + Greek + Cyrillic */
+@font-face {
+    font-family: "SourceHanSansCN";
+    src: url('../fonts/JetBrainsMono-Regular.ttf');
+    unicode-range: U+00-52F, U+1E00-1FFF, U+2200-22FF;
+}
+
+@font-face {
+    font-family: "JetBrainsMono";
+    src: url('../fonts/JetBrainsMono-Regular.ttf');
+}
+
+@font-face {
+    font-family: "LapisCV Icon";
+    font-weight: normal;
+    src: url('../fonts/iconfont.ttf?t=1727014108932') format('truetype');
+}
+
+@font-face {
+    font-family: "LapisCV Icon";
+    font-weight: bold;
+    src: url('../fonts/iconfont.ttf?t=1727014108932') format('truetype');
+}
+
+@media screen {
+    body {
+        box-shadow: 0 0 4mm 0 #a7bbc969;
+        padding-left: 20mm;
+        padding-right: 20mm;
+        padding-top: 13mm;
+        padding-bottom: 22mm;
+        margin: 8mm auto;
+
+        --background-primary: var(--vscode-editor-background);
+        --text-normal: unset !important;
+        --text-strong: unset !important;
+    }
+}
+
+.avatar,
+img[alt="avatar"] {
+    top: -1mm;
+    right: -2mm;
+}
+
+blockquote {
+    margin-left: 0;
+    margin-right: 0;
+    background: unset !important;
+    border-left-width: unset;
+    border-left-style: unset;
+}
+
+h2 {
+    border-bottom: 1px solid #a2b6d4;
+}
+
+/* Keep the contact row clear of the photo after collapsing source line breaks. */
+[data-profile-avatar="true"] [data-profile-contacts] {
+    padding-left: calc(var(--profile-photo-width, var(--avatar-width)) + 2mm);
+    padding-right: calc(var(--profile-photo-width, var(--avatar-width)) + 2mm);
+}
+[data-profile-avatar="true"] [data-profile-role="info"] p:not([data-profile-contacts]) {
+    position: relative;
+    /* The floated photo includes both 2px borders as well as its 3mm margin. */
+    left: calc(var(--profile-info-center-correction) * (var(--profile-photo-width, var(--avatar-width)) + 3mm + 4px) * (var(--profile-contact-photo-right-factor) - var(--profile-contact-photo-left-factor)) / 2);
+}
+[data-profile-photo="nested"] :is(img.avatar, img[alt="avatar"]) {
+    margin-top: calc(-1 * var(--h1-size) * 1.5) !important;
+    /* The chapter label can share the last 4mm of photo height; its rule stays below it. */
+    margin-bottom: calc(var(--profile-photo-top, 0mm) - 4mm) !important;
+}

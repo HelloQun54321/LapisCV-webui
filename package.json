@@ -1,0 +1,53 @@
+{
+  "name": "lapiscv-webui",
+  "version": "2.0.21",
+  "private": true,
+  "type": "module",
+  "description": "支持可视化编辑与 AI Agent 协作的本地中文简历工作台，以母版、独立岗位子版和投递定稿管理求职版本。",
+  "scripts": {
+    "build": "node src/build.mjs resumes/_master/resume.md resumes/_master/resume.pdf",
+    "build:serif": "node src/build.mjs resumes/_master/resume.md resumes/_master/resume.pdf --theme serif",
+    "preview": "node src/preview.mjs resumes/_master/resume.html resumes/_master/preview.png",
+    "watch": "node --watch-path=resumes/_master/resume.md src/build.mjs resumes/_master/resume.md resumes/_master/resume.pdf",
+    "docx": "node src/docx.mjs resumes/_master/resume.md resumes/_master/resume.docx",
+    "docx:serif": "node src/docx.mjs resumes/_master/resume.md resumes/_master/resume.docx --theme serif",
+    "new": "node src/apps.mjs new",
+    "apps": "node src/apps.mjs index",
+    "status": "node src/apps.mjs status",
+    "icons": "node src/assets-gen.mjs",
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "iterate": "node src/iterate.mjs",
+    "setup:git": "node src/setup-git.mjs",
+    "prepare": "node src/prepare.mjs",
+    "build:web": "node src/build-web.mjs",
+    "check:public": "node src/check-publication.mjs",
+    "screenshots": "node src/screenshots.mjs"
+  },
+  "dependencies": {
+    "@tiptap/core": "3.31.4",
+    "@tiptap/extension-text-align": "3.31.4",
+    "@tiptap/extension-text-style": "3.31.4",
+    "@tiptap/pm": "3.31.4",
+    "@tiptap/starter-kit": "3.31.4",
+    "docx": "^9.7.1",
+    "esbuild": "0.28.2",
+    "jszip": "3.10.2",
+    "marked": "^15.0.0",
+    "pdfjs-dist": "6.4.299",
+    "prosemirror-markdown": "1.13.4",
+    "puppeteer-core": "25.12.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HelloQun54321/LapisCV-webui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HelloQun54321/LapisCV-webui/issues"
+  }
+}

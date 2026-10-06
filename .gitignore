@@ -1,0 +1,41 @@
+# 个人使用数据：母版、子版、JD、投递信息、设置和导出。
+resumes/
+assets/uploads/
+.local/
+
+# 依赖与生成的前端文件。
+node_modules/
+web/visual-editor.bundle.js
+web/pdf-proof.bundle.js
+web/pdf-worker.js
+web/pdf-assets/
+chrome/
+_render/
+_dx/
+
+# 导出及完整备份可能包含个人信息。
+*.pdf
+*.docx
+*.zip
+*.bak
+
+# 本机配置、凭据与编辑器临时文件。
+.env
+.env.*
+!.env.example
+!.env.sample
+.idea/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 测试与覆盖率产物。
+coverage/
+.nyc_output/
+test-results/
+playwright-report/

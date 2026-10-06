@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>简历工作台 · 本地编辑器</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23202123'/%3E%3Cpath d='M20 16h24v32H20z' fill='none' stroke='%23ffffff' stroke-width='3'/%3E%3Cpath d='M26 26h12m-12 7h12m-12 7h8' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="/visual-editor.css">
+  <link rel="stylesheet" href="/workflow.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="activity-rail" id="activity-rail" aria-label="工作台导航">
+      <a class="rail-brand" href="/" aria-label="简历工作台首页"><span data-ui-icon="file-text" aria-hidden="true"></span></a>
+      <button id="rail-documents" class="rail-button active" aria-label="简历" aria-pressed="true"><span data-ui-icon="files" aria-hidden="true"></span></button>
+      <button id="rail-archive" class="rail-button" aria-label="已归档" aria-pressed="false"><span data-ui-icon="file-archive" aria-hidden="true"></span></button>
+      <button id="trash-button" class="rail-button" aria-label="回收站"><span data-ui-icon="trash-2" aria-hidden="true"></span></button>
+      <div class="rail-bottom">
+        <button id="theme-toggle" class="rail-button" aria-label="切换夜间模式" aria-pressed="false"><span data-ui-icon="moon" aria-hidden="true"></span></button>
+        <button id="appearance-button" class="rail-button" aria-label="外观与字体"><span data-ui-icon="settings-2" aria-hidden="true"></span></button>
+        <button id="help-button" class="rail-button" aria-label="使用指南 F1"><span data-ui-icon="circle-help" aria-hidden="true"></span></button>
+      </div>
+    </nav>
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="简历工作台首页">简历工作台</a>
+      <button class="new-button" id="new-button"><span data-ui-icon="plus" aria-hidden="true"></span> 新建投递</button>
+      <div class="sidebar-search"><div class="search-box"><span data-ui-icon="search" aria-hidden="true"></span><input id="search" type="search" placeholder="搜索公司或岗位" aria-label="搜索简历"></div><button id="filter-toggle" class="icon-button" aria-label="筛选与分组" aria-expanded="false" aria-controls="list-filters"><span data-ui-icon="sliders-horizontal" aria-hidden="true"></span></button></div>
+      <div class="list-filters" id="list-filters" hidden><select id="archive-filter" aria-label="按归档状态筛选"><option value="active">未归档</option><option value="archived">已归档</option><option value="all">全部记录</option></select><select id="status-filter" aria-label="按投递状态筛选"><option value="">所有状态</option></select><select id="follow-filter" aria-label="按跟进日期筛选"><option value="">所有跟进</option><option value="due">到期待跟进</option><option value="week">未来七天</option></select><label>列表分组<select id="group-by" aria-label="投递列表分组"><option value="">默认列表</option><option value="company">按公司</option><option value="status">按状态</option></select></label><span id="follow-summary" role="status"></span></div>
+      <button id="list-filter-summary" class="list-filter-summary" aria-label="查看当前筛选" hidden></button>
+      <div class="nav-caption"><span id="list-caption">我的简历</span><span id="document-count">01</span></div>
+      <nav id="document-list" aria-label="简历列表"></nav>
+      <div id="list-empty" class="list-empty" hidden>没有找到匹配的简历</div>
+      <div class="sidebar-bottom">
+        <div class="local-badge"><span data-ui-icon="hard-drive" aria-hidden="true"></span><span>本地工作台</span></div>
+      </div>
+    </aside>
+    <main class="workspace">
+      <header class="topbar">
+        <button id="menu-button" class="icon-button menu-button" aria-label="打开简历列表"><span data-ui-icon="menu" aria-hidden="true"></span></button>
+        <div class="header-title"><h1 id="doc-title">母版简历</h1><span id="archive-badge" class="archive-badge" hidden>已归档</span><p id="doc-description">母版 · 完整经历</p></div>
+        <div class="workspace-bar">
+          <div class="tabs" role="tablist" aria-label="编辑内容"><button class="tab active" id="resume-tab" data-tab="resume" role="tab" aria-selected="true">简历</button><button class="tab" id="jd-tab" data-tab="jd" role="tab" aria-selected="false" disabled>岗位 JD</button><button class="tab" id="details-tab" data-tab="details" role="tab" aria-selected="false" disabled>投递信息</button></div>
+        </div>
+        <div class="document-actions"><button id="save-button" class="secondary-button" aria-label="保存当前编辑" title="保存 Ctrl+S"><span id="save-state" class="save-state" role="status">正在连接…</span></button><button id="more-button" class="icon-button" aria-label="更多操作"><span data-ui-icon="ellipsis" aria-hidden="true"></span></button><button id="export-button" class="primary-button"><span data-ui-icon="download" aria-hidden="true"></span> 导出 PDF</button></div>
+      </header>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="draft-banner" class="draft-banner" hidden><span>发现尚未保存的本地草稿。</span><div><button id="recover-draft">恢复草稿</button><button id="discard-draft">忽略草稿</button></div></div>
+      <div id="document-toolbar" class="document-toolbar" aria-label="当前内容工具栏">
+        <div class="mode-switch" aria-label="简历编辑模式"><button id="visual-mode" aria-pressed="true" title="直接编辑纸面">编辑</button><button id="source-mode" aria-pressed="false" title="编辑 Markdown 源码">源码</button></div>
+        <div id="source-tools" class="editor-toolbar" hidden aria-label="编辑工具栏"><button data-insert="bold" title="加粗选中文字 (Ctrl+B)" aria-label="加粗选中文字 (Ctrl+B)"><span data-ui-icon="bold" aria-hidden="true"></span></button><button data-insert="heading" title="插入章节" aria-label="插入章节"><span data-ui-icon="heading-2" aria-hidden="true"></span></button><button data-insert="list" title="插入项目符号" aria-label="插入项目符号"><span data-ui-icon="list" aria-hidden="true"></span></button><button data-insert="entry" title="插入经历标题与日期" aria-label="插入经历标题与日期"><span data-ui-icon="briefcase-business" aria-hidden="true"></span></button><button data-insert="link" title="插入链接" aria-label="插入链接"><span data-ui-icon="link" aria-hidden="true"></span></button><span class="toolbar-divider"></span><button id="icons-button" title="插入简历图标" aria-label="插入简历图标"><span data-ui-icon="shapes" aria-hidden="true"></span></button><button id="avatar-button" title="上传并插入头像" aria-label="上传并插入头像"><span data-ui-icon="user-round" aria-hidden="true"></span></button><button data-insert="break" title="插入强制分页" aria-label="插入强制分页"><span data-ui-icon="separator-horizontal" aria-hidden="true"></span></button><div class="toolbar-end"><button id="import-button" title="导入 Markdown"><span data-ui-icon="upload" aria-hidden="true"></span> 导入</button><button id="source-button" title="下载 Markdown 源文件"><span data-ui-icon="download" aria-hidden="true"></span> MD</button><span id="character-count" class="source-meta">0 字符</span><label class="autosave-label"><input id="autosave" type="checkbox" checked> 自动保存</label><span id="editor-language" hidden>Markdown</span></div></div>
+          <div id="visual-toolbar" class="visual-toolbar" aria-label="文字格式工具栏">
+            <button data-format="undo" title="撤销 Ctrl+Z" aria-label="撤销"><span data-ui-icon="undo-2" aria-hidden="true"></span></button><button data-format="redo" title="重做 Ctrl+Y" aria-label="重做"><span data-ui-icon="redo-2" aria-hidden="true"></span></button><span class="toolbar-divider"></span>
+            <select id="text-kind" aria-label="段落类型"><option value="paragraph">正文</option><option value="1">姓名标题</option><option value="2">章节标题</option><option value="3">经历标题</option></select>
+            <select id="text-font" aria-label="选中文字字体"><option value="">默认字体</option><option value="SourceHanSansCN">思源黑体</option><option value="SourceHanSerifCN">思源宋体（粗体）</option><option value="JetBrainsMono">等宽字体</option></select>
+            <input id="text-size" type="number" min="6" max="40" step="any" placeholder="字号" list="font-sizes" aria-label="选中文字字号"><datalist id="font-sizes"><option value="9"><option value="10"><option value="10.5"><option value="11"><option value="12"><option value="14"><option value="16"><option value="18"><option value="24"></datalist>
+            <button data-format="bold" title="加粗 Ctrl+B" aria-label="加粗"><span data-ui-icon="bold" aria-hidden="true"></span></button><button data-format="italic" title="斜体 Ctrl+I" aria-label="斜体"><span data-ui-icon="italic" aria-hidden="true"></span></button><button data-format="underline" title="下划线 Ctrl+U" aria-label="下划线"><span data-ui-icon="underline" aria-hidden="true"></span></button>
+            <label class="color-control" title="文字颜色">A<input id="text-color" type="color" value="#202123" aria-label="选中文字颜色"></label><span class="toolbar-divider"></span>
+            <button data-format="align" data-value="left" title="左对齐" aria-label="左对齐"><span data-ui-icon="align-left" aria-hidden="true"></span></button><button data-format="align" data-value="center" title="居中" aria-label="居中"><span data-ui-icon="align-center" aria-hidden="true"></span></button><button data-format="align" data-value="right" title="右对齐" aria-label="右对齐"><span data-ui-icon="align-right" aria-hidden="true"></span></button>
+            <button data-format="bullet" title="项目符号" aria-label="项目符号"><span data-ui-icon="list" aria-hidden="true"></span></button><button data-format="ordered" title="编号列表" aria-label="编号列表"><span data-ui-icon="list-ordered" aria-hidden="true"></span></button><button data-format="clear" title="清除文字样式，保留标题和列表" aria-label="清除文字样式"><span data-ui-icon="remove-formatting" aria-hidden="true"></span></button>
+          </div>
+          <div id="proof-toolbar" class="proof-toolbar" hidden><button id="proof-back"><span data-ui-icon="arrow-left" aria-hidden="true"></span> 返回编辑</button><span id="proof-status" role="status">PDF 校样</span><div class="proof-navigation"><button id="proof-prev" aria-label="上一页 PDF"><span data-ui-icon="chevron-left" aria-hidden="true"></span></button><input id="proof-page" type="number" min="1" value="1" aria-label="PDF 校样页码"><small id="proof-total"></small><button id="proof-next" aria-label="下一页 PDF"><span data-ui-icon="chevron-right" aria-hidden="true"></span></button></div><button id="proof-print-colors" aria-pressed="false" title="切换屏幕阅读配色与 PDF 原始打印配色" hidden>打印配色</button><button id="proof-refresh">更新校样</button><button id="proof-download">下载此 PDF</button></div>
+        <div class="toolbar-actions">
+          <button id="source-preview-toggle" class="tool-button" aria-pressed="false">查看预览</button>
+          <button id="properties-toggle" class="tool-button" aria-expanded="false" aria-controls="properties-panel" aria-label="排版设置" title="排版设置">排版</button>
+          <button id="jd-reference-toggle" class="tool-button" aria-pressed="false" title="并排查看和编辑岗位 JD" hidden>JD 对照</button>
+          <div class="proof-control"><button id="proof-button" class="tool-button" title="查看实际 PDF 的分页与版式">分页校样</button><small id="proof-summary" role="status" hidden></small></div>
+          <div class="view-controls" aria-label="预览视图"><div class="zoom-controls"><button id="zoom-out" aria-label="缩小预览"><span data-ui-icon="minus" aria-hidden="true"></span></button><button id="zoom-fit" title="适应宽度">适应宽度</button><button id="zoom-in" aria-label="放大预览"><span data-ui-icon="plus" aria-hidden="true"></span></button></div><button id="focus-button" class="icon-button" title="展开预览" aria-label="展开预览"><span data-ui-icon="maximize" aria-hidden="true"></span></button></div>
+        </div>
+      </div>
+      <div class="work-grid">
+        <section class="editor-panel panel" id="editor-panel">
+          <div id="editor-view" class="editor-view">
+            <div class="code-editor"><div id="line-numbers" class="line-numbers" aria-hidden="true"></div><textarea id="editor" aria-label="Markdown 编辑器" spellcheck="false" wrap="soft" placeholder="从姓名开始，写下你的经历…"></textarea><div id="code-measure" class="code-measure" aria-hidden="true"></div></div>
+          </div>
+          <form id="details-view" class="details-view" hidden><label>公司<input id="meta-company" maxlength="200"></label><label>岗位<input id="meta-title" maxlength="200"></label><div class="form-row"><label>创建日期<input id="meta-created" type="date"></label><label>投递状态<select id="meta-status"></select></label></div><div class="form-row"><label>投递日期<input id="meta-sent" type="date"></label><label>下次跟进<input id="meta-followUp" type="date"></label></div><label>备注<textarea id="meta-notes" rows="5" maxlength="2000" placeholder="投递渠道、面试时间、跟进事项"></textarea></label></form>
+        </section>
+        <section class="preview-panel panel">
+          <div class="preview-stage" id="preview-stage"><div class="preview-loading" id="preview-loading">加载中…</div><div id="paper-wrap" class="paper-wrap"><iframe id="preview" title="简历 A4 编辑与预览" sandbox="allow-same-origin" tabindex="0"></iframe></div><div id="proof-view" class="pdf-proof" aria-label="实际 PDF 分页校样" hidden></div></div>
+        </section>
+        <aside class="properties-panel panel" id="properties-panel">
+          <div class="panel-head">排版与结构<button id="properties-close" class="icon-button" aria-label="收起排版设置"><span data-ui-icon="x" aria-hidden="true"></span></button></div>
+          <div class="property-content">
+            <p id="property-context" class="property-context" role="status">当前段落</p>
+            <details open><summary>插入内容</summary><div class="property-buttons"><button data-visual-insert="heading">＋ 章节</button><button data-visual-insert="entry">＋ 经历</button><button data-visual-insert="break">插入分页符</button><button id="visual-divider">装饰横线</button><button id="visual-icons">插入图标</button><button id="visual-avatar">上传头像</button><button id="visual-image">普通图片</button><button id="visual-table">插入表格</button><button id="visual-link">编辑链接</button></div></details>
+            <details open><summary>整份简历排版</summary><label class="property-label">简历排版<select id="theme" aria-label="简历排版"><option value="classic">居中标准</option><option value="serif">左对齐标题</option><option value="banner">横向名片</option></select></label><p id="layout-description" class="property-hint"></p><div class="property-grid">
+              <label>正文字号 <small>pt</small><input data-layout="textSize" type="number" min="6" max="24" step="any" aria-label="整份简历正文字号"></label>
+              <label>正文行距<input data-layout="lineHeight" type="number" min="1" max="3" step="any" aria-label="整份简历正文行距"></label>
+              <label>姓名字号 <small>pt</small><input data-layout="h1Size" type="number" min="10" max="40" step="any" aria-label="姓名标题字号"></label>
+              <label>章节字号 <small>pt</small><input data-layout="h2Size" type="number" min="8" max="24" step="any" aria-label="章节标题字号"></label>
+              <label>章节前距 <small>mm</small><input data-layout="sectionBefore" type="number" min="0" max="15" step="any" aria-label="章节前间距"></label>
+              <label>章节后距 <small>mm</small><input data-layout="sectionAfter" type="number" min="0" max="10" step="any" aria-label="章节后间距"></label>
+            </div><label class="property-label">正文字体<select data-layout="textFont" aria-label="整份简历正文字体"><option value="SourceHanSansCN">思源黑体</option><option value="SourceHanSerifCN">思源宋体（粗体）</option></select></label><label class="property-label">标题字体<select data-layout="titleFont" aria-label="整份简历标题字体"><option value="SourceHanSansCN">思源黑体</option><option value="SourceHanSerifCN">思源宋体</option></select></label><label class="property-label color-setting">强调色<input data-layout="accent" type="color" aria-label="整份简历强调色"></label></details>
+            <details><summary>页面边距 <small>mm</small></summary><div class="property-grid"><label>上<input data-layout="marginTop" type="number" min="3" max="35" step="any" aria-label="上页边距"></label><label>下<input data-layout="marginBottom" type="number" min="3" max="35" step="any" aria-label="下页边距"></label><label>左<input data-layout="marginLeft" type="number" min="3" max="35" step="any" aria-label="左页边距"></label><label>右<input data-layout="marginRight" type="number" min="3" max="35" step="any" aria-label="右页边距"></label></div></details>
+            <details><summary>当前段落</summary><div class="property-grid"><label>行距<input data-paragraph="lineHeight" type="number" min="1" max="4" step="any" aria-label="当前段落行距"></label><label>左缩进 <small>mm</small><input data-paragraph="indent" type="number" min="0" max="25" step="any" aria-label="当前段落左缩进"></label><label>段前 <small>mm</small><input data-paragraph="before" type="number" min="0" max="30" step="any" aria-label="当前段落前间距"></label><label>段后 <small>mm</small><input data-paragraph="after" type="number" min="0" max="30" step="any" aria-label="当前段落后间距"></label></div></details>
+            <details id="avatar-settings"><summary>头像尺寸、位置与裁剪</summary>
+              <p id="avatar-target" class="property-hint">第一个头像</p>
+              <div class="property-grid"><label>宽度 <small>mm</small><input data-layout="avatarWidth" type="number" min="1" max="180" step="any" aria-label="头像宽度"></label><label>高度 <small>mm</small><input data-layout="avatarHeight" type="number" min="1" max="250" step="any" aria-label="头像高度"></label></div>
+              <label class="visual-autosave"><input id="image-ratio-lock" type="checkbox" checked> 锁定宽高比例</label>
+              <div class="property-grid"><label>水平偏移 <small>mm · +右</small><input data-image="left" type="number" min="-100" max="100" step="any" aria-label="头像水平偏移"></label><label>垂直偏移 <small>mm · +下</small><input data-image="top" type="number" min="-100" max="100" step="any" aria-label="头像垂直偏移"></label></div>
+              <div class="nudge-controls" aria-label="头像微调"><button data-nudge="left:-0.1" title="左移 0.1mm" aria-label="左移 0.1mm"><span data-ui-icon="arrow-left" aria-hidden="true"></span></button><button data-nudge="top:-0.1" title="上移 0.1mm" aria-label="上移 0.1mm"><span data-ui-icon="arrow-up" aria-hidden="true"></span></button><button data-nudge="top:0.1" title="下移 0.1mm" aria-label="下移 0.1mm"><span data-ui-icon="arrow-down" aria-hidden="true"></span></button><button data-nudge="left:0.1" title="右移 0.1mm" aria-label="右移 0.1mm"><span data-ui-icon="arrow-right" aria-hidden="true"></span></button><button data-image-scale="0.95" title="等比例缩小 5%">−5%</button><button data-image-scale="1.05" title="等比例放大 5%">＋5%</button></div>
+              <label class="property-label">水平裁剪<input data-layout="cropX" type="range" min="0" max="100" step="1" aria-label="头像水平裁剪位置"></label><label class="property-label">垂直裁剪<input data-layout="cropY" type="range" min="0" max="100" step="1" aria-label="头像垂直裁剪位置"></label><button id="remove-avatar" class="property-action">移除当前头像</button>
+            </details>
+            <details id="image-settings"><summary>普通图片</summary><p id="picture-target" class="property-hint">第一张图片</p><div class="property-grid"><label>宽 <small>mm</small><input data-picture="width" type="number" min="1" max="180" step="any"></label><label>高 <small>mm</small><input data-picture="height" type="number" min="1" max="250" step="any"></label><label>水平偏移 <small>mm</small><input data-picture="left" type="number" min="-100" max="100" step="any"></label><label>垂直偏移 <small>mm</small><input data-picture="top" type="number" min="-100" max="100" step="any"></label></div><button id="replace-image" class="property-action">替换当前图片</button><button id="remove-image" class="property-action">移除当前图片</button></details>
+            <details id="rule-settings"><summary>横线样式与位置</summary><label class="property-label">应用范围<select id="rule-scope"><option value="current">当前章节／选中横线</option><option value="all">所有章节</option></select></label><div class="property-grid"><label>粗细 <small>mm</small><input data-rule="thickness" type="number" min="0" max="3" step="any"></label><label>长度 <small>%</small><input data-rule="width" type="number" min="1" max="100" step="any"></label><label>文字距离 <small>mm</small><input data-rule="gap" type="number" min="0" max="20" step="any"></label><label>水平偏移 <small>mm</small><input data-rule="x" type="number" min="-50" max="50" step="any"></label><label>垂直偏移 <small>mm · +下</small><input data-rule="y" type="number" min="-20" max="20" step="any"></label><label>线型<select data-rule="style"><option value="solid">实线</option><option value="dashed">虚线</option><option value="dotted">点线</option><option value="none">隐藏</option></select></label></div><label class="property-label color-setting">颜色<input data-rule="color" type="color" value="#a2b6d4"></label></details>
+            <details id="table-settings"><summary>表格行列</summary><div class="property-buttons"><button data-table="row-add"><span data-ui-icon="plus" aria-hidden="true"></span> 末尾加行</button><button data-table="row-remove"><span data-ui-icon="minus" aria-hidden="true"></span> 末尾删行</button><button data-table="column-add"><span data-ui-icon="plus" aria-hidden="true"></span> 末尾加列</button><button data-table="column-remove"><span data-ui-icon="minus" aria-hidden="true"></span> 末尾删列</button></div></details>
+            <details open><summary>章节与经历顺序</summary><div id="document-outline" class="document-outline"></div></details>
+            <details id="profile-settings"><summary>个人信息布局</summary>
+              <p class="property-hint">姓名和联系方式可在纸面直接编辑；这里调整信息区域，头像可在上方单独微调。</p>
+              <label class="property-label">姓名对齐<select data-layout="nameAlign" aria-label="姓名对齐"><option value="auto">跟随模板</option><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label>
+              <label class="property-label">基本信息对齐<select data-layout="infoAlign" aria-label="基本信息对齐"><option value="auto">跟随模板</option><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label>
+              <label class="property-label">联系方式排列<select data-layout="contactFlow" aria-label="联系方式排列"><option value="auto">跟随模板</option><option value="inline">横排，空间不足时换行</option><option value="stacked">竖排</option></select></label>
+              <label class="property-label">头像左右位置<select data-layout="avatarSide" aria-label="头像左右位置"><option value="auto">跟随模板</option><option value="left">靠左</option><option value="right">靠右</option></select></label>
+              <label class="property-label">基本信息分栏<select data-layout="infoColumns" aria-label="基本信息分栏"><option value="1">单栏</option><option value="2">两栏</option></select></label>
+              <div class="property-grid">
+                <label>联系方式间距 <small>mm</small><input data-layout="contactGap" type="number" min="0" max="12" step="any" aria-label="联系方式间距"></label>
+                <label>信息字号 <small>pt</small><input data-layout="infoSize" type="number" min="6" max="16" step="any" aria-label="基本信息字号"></label>
+                <label>信息行距<input data-layout="infoLineHeight" type="number" min="1" max="2.5" step="any" aria-label="基本信息行距"></label>
+                <label>姓名下距 <small>mm</small><input data-layout="nameGap" type="number" min="0" max="12" step="any" aria-label="姓名下方间距"></label>
+                <label>信息下距 <small>mm</small><input data-layout="infoGap" type="number" min="0" max="20" step="any" aria-label="基本信息下方间距"></label>
+                <label>水平偏移 <small>mm</small><input data-layout="infoLeft" type="number" min="-30" max="30" step="any" aria-label="基本信息水平偏移"></label>
+                <label>垂直偏移 <small>mm</small><input data-layout="infoTop" type="number" min="-30" max="30" step="any" aria-label="基本信息垂直偏移"></label>
+              </div>
+            </details>
+            <button id="reset-layout" class="property-action" title="保留自定义样式和单个对象设置">重置全局排版</button>
+            <label class="visual-autosave" title="移动头像或图片时显示对齐线；Alt 暂时取消吸附，Esc 取消拖动"><input id="alignment-guides" type="checkbox" checked> 智能对齐辅助线</label>
+            <label class="visual-autosave" title="Ctrl+Shift+V 纯文本粘贴"><input id="paste-format" type="checkbox" checked> 保留粘贴格式</label><label class="visual-autosave"><input id="visual-autosave" type="checkbox" checked> 自动保存</label>
+          </div>
+        </aside>
+        <aside id="jd-reference-panel" class="jd-reference-panel panel" aria-label="岗位 JD 对照"><div class="panel-head">岗位 JD 对照<button id="jd-reference-close" class="icon-button" aria-label="收起 JD 对照"><span data-ui-icon="x" aria-hidden="true"></span></button></div><textarea id="jd-reference-editor" aria-label="并排对照的岗位 JD" placeholder="粘贴岗位 JD"></textarea></aside>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="modal"><div class="modal-head"><div><h2 id="modal-title"></h2></div><button id="modal-close" class="icon-button" aria-label="关闭对话框"><span data-ui-icon="x" aria-hidden="true"></span></button></div><div id="modal-body"></div></dialog>
+  <input id="import-file" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+  <input id="avatar-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+  <input id="image-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+</body>
+</html>

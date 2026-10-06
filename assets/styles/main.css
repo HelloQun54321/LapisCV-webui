@@ -1,0 +1,282 @@
+/* 
+ *   Lapis CV  /  Author - YiNN (BingyanStudio)
+ *   https://github.com/BingyanStudio/LapisCV
+ */
+
+/* 图形化编辑允许跨主题选用随项目提供的宋体标题字体。 */
+@font-face { font-family: "SourceHanSansCN"; src: url('../fonts/SourceHanSansCN-Regular.ttf'); }
+@font-face { font-family: "SourceHanSansCN"; src: url('../fonts/SourceHanSansCN-Bold.ttf'); font-weight: bold; }
+@font-face { font-family: "JetBrainsMono"; src: url('../fonts/JetBrainsMono-Regular.ttf'); }
+@font-face { font-family: "LapisCV Icon"; src: url('../fonts/iconfont.ttf'); font-weight: 400 700; }
+@font-face {
+    font-family: "SourceHanSerifCN";
+    src: url('../fonts/SourceHanSerifCN-Bold.ttf');
+    font-weight: bold;
+}
+
+/* Text */
+
+a,
+a span {
+    font-family: var(--link-font);
+}
+
+code {
+    font-family: var(--code-font);
+}
+
+p,
+li {
+    font-family: "LapisCV Icon", var(--text-font);
+    font-size: var(--text-size);
+    line-height: var(--line-height);
+    color: var(--text-normal);
+}
+
+/* Title */
+
+h1,
+h2,
+h3 {
+    font-weight: bold;
+    font-family: "LapisCV Icon", var(--title-font);
+}
+
+h1 {
+    font-size: var(--h1-size);
+    color: var(--h1-color);
+    line-height: 1.5;
+    border-bottom: 0;
+}
+
+h1,
+blockquote p {
+    text-align: center;
+}
+
+h2 {
+    color: var(--h2-color);
+    font-size: var(--h2-size);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent), rgb(0 0 0 / 0) 60%);
+    margin-top: 2.4mm !important;
+    margin-bottom: 1.9mm !important;
+    line-height: 1;
+    padding: 1mm 0;
+}
+
+h3,
+h4,
+h5,
+h6 {
+    color: var(--h3-color);
+    line-height: 1.8;
+    font-size: var(--h3-size);
+}
+
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+    font-weight: normal;
+    font-size: var(--h3-size) - 0.5pt;
+}
+
+.md-math-block,
+.md-rawblock,
+h1,
+h3,
+h4,
+h5,
+h6,
+blockquote,
+p,
+li p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+@media print {
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        page-break-after: avoid;
+    }
+}
+
+strong {
+    color: var(--text-strong);
+}
+
+/* List */
+
+ul {
+    list-style-type: '\2022';
+    padding-inline-start: 3mm;
+    padding-inline-end: 1mm;
+}
+
+ol {
+    padding-inline-start: 5mm;
+    padding-inline-end: 1mm;
+}
+
+ol li {
+    padding-left: 0;
+}
+
+ol,
+ul {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+
+li {
+    padding-left: 1.5mm;
+}
+
+ul ::marker {
+    font-weight: bolder;
+}
+
+ol ::marker {
+    font-weight: normal;
+}
+
+/* Avatar */
+
+/* 本地改动(非上游):方形证件照。只去掉了上游的 border-radius:50% 与 3mm 白色光晕 ——
+   前者会把竖版证件照裁成椭圆,后者占掉右上角约 3mm 正文空间、撞上第一条经历的日期行。
+   border 保留:白底证件照与纸张同色,没有这圈细线就分不出照片的边界,会变成「浮着一个人头」。
+   高度由 --avatar-height 单独控制(默认 2.2×3.2cm 小一寸);未定义时退回与宽度相等。 */
+.avatar,
+img[alt="avatar"] {
+    display: block;
+    position: relative;
+    top: 1mm;
+    right: 0;
+    z-index: 9999;
+    float: right;
+    object-fit: cover;
+    overflow: hidden;
+
+    width: var(--avatar-width);
+    height: var(--avatar-height, var(--avatar-width));
+    border: 2px solid var(--border-color);
+    margin: 0 0 0 3mm;
+}
+
+p:has(.avatar, img[alt="avatar"]) {
+    height: 0;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+/* Link */
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: normal;
+}
+
+/* Code */
+
+code {
+    background-color: var(--background-primary);
+    color: var(--text-normal) !important;
+    font-size: var(--text-size);
+}
+
+/* Block Quote */
+
+blockquote,
+blockquote * {
+    line-height: 1.6;
+    padding: 0;
+    font-size: var(--blockquote-size);
+}
+
+/* Remove the quote rail only on the container; descendants may have their own
+   frames. Applying this to blockquote * erases the nested avatar's left edge. */
+blockquote {
+    border-inline-start: none !important;
+}
+
+blockquote a {
+    color: var(--text-normal) !important;
+}
+
+/* Custom Class */
+
+.entry-title,
+div[alt="entry-title"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.icon,
+span[alt="icon"] {
+    color: var(--color-accent);
+}
+
+/* Horizontal Line */
+
+hr {
+    border-top: 2px solid #dae3eac9;
+    border-bottom: none;
+    margin: 15mm 0 12mm 0;
+}
+
+/* Personal information roles are a view projection, shared by editing and PDF. */
+body {
+    --profile-name-align: center;
+    --profile-info-align: center;
+    --profile-info-columns: 1;
+    --profile-avatar-side: right;
+    --profile-photo-column: 2;
+    --profile-text-column: 1;
+    --profile-contact-break: none;
+    --profile-contact-separator: inline-block;
+    --profile-contact-padding: inline;
+    --profile-contact-soft-break: inline-block;
+    --profile-contact-gap: 4mm;
+    --profile-contact-photo-left-factor: 0;
+    --profile-contact-photo-right-factor: 1;
+}
+:is(.resume-content, .resume-editor) {
+    display: flow-root;
+    --profile-contact-photo-left: calc(var(--profile-contact-photo-left-factor) * (var(--profile-photo-width, var(--avatar-width)) + var(--profile-contact-gap)));
+    --profile-contact-photo-right: calc(var(--profile-contact-photo-right-factor) * (var(--profile-photo-width, var(--avatar-width)) + var(--profile-contact-gap)));
+}
+[data-profile-role="name"] { text-align: var(--profile-name-align); }
+[data-profile-role="info"] {
+    text-align: var(--profile-info-align);
+    column-count: var(--profile-info-columns);
+    column-gap: 5mm;
+    overflow-wrap: anywhere;
+}
+[data-profile-role="info"] p { text-align: var(--profile-info-align); }
+[data-profile-role="info"]:has(.avatar, img[alt="avatar"]) { column-count: 1; }
+[data-profile-role="info"]:has(.avatar, img[alt="avatar"]) > p { column-count: var(--profile-info-columns); column-gap: 5mm; }
+[data-profile-contacts] br { display: var(--profile-contact-break); }
+[data-profile-contacts] .resume-contact-separator { display: var(--profile-contact-separator); width: var(--profile-contact-gap); }
+[data-profile-contacts] .resume-contact-padding { display: var(--profile-contact-padding); }
+[data-profile-contacts] .resume-contact-padding + .resume-contact-separator { width: var(--profile-contact-padded-separator-width, 0mm); }
+[data-profile-contacts] .resume-contact-soft-break { display: var(--profile-contact-soft-break); line-height: 0 !important; width: var(--profile-contact-soft-space-width, auto); font-size: var(--profile-contact-soft-space-size, inherit) !important; }
+[data-profile-contacts] :is(code, a) { font-size: inherit; }
+
+@media print {
+    hr {
+        page-break-after: always;
+        margin: 0;
+        visibility: hidden;
+    }
+}
